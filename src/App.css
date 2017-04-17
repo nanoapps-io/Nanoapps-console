@@ -8,7 +8,9 @@
 }
 
 .App-header {
-  background-color: #222;
+  background: url("../public/logo.png") bottom fixed;
+  width: 100%;
+  background-position-x:-100px; 
   height: 150px;
   padding-top: 30px;
   padding-left: 20px;
@@ -38,6 +40,9 @@
 .split-box {
   padding: 75px;
 }
+.progressbar {
+  margin-left: 13%;
+}
 
 .overlay {
     background-color: #000000;
@@ -45,4 +50,7 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+.modal {
+  padding: 40px;
 }

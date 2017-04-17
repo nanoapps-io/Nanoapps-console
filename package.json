@@ -50,7 +50,10 @@
     "react-bootstrap": "^0.30.8",
     "react-dom": "^15.5.4",
     "react-dropzone": "^3.12.4",
-    "react-flexbox-grid": "^1.0.2"
+    "react-flexbox-grid": "^1.0.2",
+    "react-modal": "^1.7.6",
+    "react-progress-bar-plus": "^1.2.0",
+    "simple-react-modal": "^0.5.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
