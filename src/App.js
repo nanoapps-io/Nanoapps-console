@@ -6,6 +6,7 @@ import { Grid, Row, Col} from 'react-flexbox-grid';
 import Dropzone from 'react-dropzone';
 import { Form, FormGroup, Button, Panel, ProgressBar} from 'react-bootstrap';
 import * as configs from "./config"
+import NanoappsNavbar from "./NanoappsNavbar"
 
 class App extends Component {
 
@@ -21,11 +22,14 @@ class App extends Component {
       main_component_name: "",
       app_file_location: "",
       showModal: false,
-      xhr_request_progress: 0
+      xhr_request_progress: 0,
+      text: "",
+      text_index: 0
 		};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onDrop = this.onDrop.bind(this);
+    this.handleClick = this.handleClick.bind(this);
 	}
 
   resetValues() {
@@ -82,6 +86,11 @@ class App extends Component {
     var states = {}
     states[event.target.id] = event.target.value;
     this.setState(states);
+  }
+  handleClick(event) {
+    var harrypotter = ["emmawatson", "ruper grint", "daniel radicliffe", "nanoapps"];
+    var rand = harrypotter[Math.floor(Math.random() * harrypotter.length)];
+    this.setState({text: rand});
   }
 
   handleSubmit(event) {
@@ -140,6 +149,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
+          <NanoappsNavbar />
         </div>
         <p className="App-intro">
           <Grid fluid>
