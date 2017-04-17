@@ -29,7 +29,6 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onDrop = this.onDrop.bind(this);
-    this.handleClick = this.handleClick.bind(this);
 	}
 
   resetValues() {
@@ -69,7 +68,7 @@ class App extends Component {
         xhr.upload.addEventListener("progress", function (evt) {
             if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
-                percentComplete = parseInt(percentComplete * 100);
+                percentComplete = parseInt(percentComplete * 100, 10);
                 this.setState({xhr_request_progress: percentComplete})
             }
         }.bind(this), false);
@@ -86,11 +85,6 @@ class App extends Component {
     var states = {}
     states[event.target.id] = event.target.value;
     this.setState(states);
-  }
-  handleClick(event) {
-    var harrypotter = ["emmawatson", "ruper grint", "daniel radicliffe", "nanoapps"];
-    var rand = harrypotter[Math.floor(Math.random() * harrypotter.length)];
-    this.setState({text: rand});
   }
 
   handleSubmit(event) {
@@ -122,7 +116,7 @@ class App extends Component {
         xhr.upload.addEventListener("progress", function (evt) {
             if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
-                percentComplete = parseInt(percentComplete * 100);
+                percentComplete = parseInt(percentComplete * 100, 10);
                 this.setState({xhr_request_progress: percentComplete})
             }
         }.bind(this), false);
@@ -140,12 +134,13 @@ class App extends Component {
              </div>;
     }
     var progressbar = "";
-    if (this.state.xhr_request_progress != 0 && this.state.xhr_request_progress<100) {
-      progressbar = <ProgressBar striped bsStyle="success" active now={this.state.xhr_request_progress} label={`${this.state.xhr_request_progress}%`} />
-    }
-    if (this.state.xhr_request_progress != 0 && this.state.xhr_request_progress==100) {
-      progressbar = status;
-    }
+    if (this.state.xhr_request_progress != 0) {
+	    if (this.state.xhr_request_progress<100) {
+	      progressbar = <ProgressBar striped bsStyle="success" active now={this.state.xhr_request_progress} label={`${this.state.xhr_request_progress}%`} />
+	    } else if (this.state.xhr_request_progress==100) {
+	      progressbar = status;
+	    }
+   }
     return (
       <div className="App">
         <div className="App-header">
