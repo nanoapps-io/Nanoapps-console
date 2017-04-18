@@ -2,9 +2,11 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.logo {
+  background-image: url('https://image.ibb.co/eqFm1Q/short_logo_2.png');
+  width: 300px;
+  height: 100px;
+  background-position-x:-15px;
 }
 
 .App-header {
@@ -13,7 +15,6 @@
 
 .App-intro {
   font-size: large;
-  margin-top: 30px;
 }
 
 .center-text {
@@ -30,6 +31,8 @@
 
 .split-box {
   padding: 75px;
+  text-align: center;
+  vertical-align:middle;
 }
 .progressbar {
   margin-left: 13%;
@@ -44,4 +47,20 @@
 }
 .modal {
   padding: 40px;
+}
+.sidebar {
+  background-color: #000000;
+  width: 200px;
+  height: 100%;
+  position: fixed;
+}
+.show {
+  visibility: visible;
+}
+.hide {
+  visibility:hidden;
+}
+.below_logo {
+  width: 300px;
+  height: 50px;
 }

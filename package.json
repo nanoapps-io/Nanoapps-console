@@ -53,12 +53,15 @@
     "react-flexbox-grid": "^1.0.2",
     "react-modal": "^1.7.6",
     "react-progress-bar-plus": "^1.2.0",
+    "react-toolbox": "^2.0.0-beta.8",
+    "react-toolbox-themr": "^1.0.2",
     "simple-react-modal": "^0.5.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "toolbox": "react-toolbox-themr"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -91,5 +94,25 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "reactToolbox": {
+    "include": [
+        "BUTTON",
+        "DATE_PICKER",
+        "LAYOUT",
+        "TABS",
+        "PROGRESS_BAR",
+        "SNACKBAR",
+        "CARD",
+        "LIST"
+    ],
+    "customProperties": {
+        "animation-duration": "0.3s",
+        "color-accent": "var(--palette-pink-a200)",
+        "color-accent-dark": "var(--palette-pink-700)",
+        "color-primary-contrast": "var(--color-dark-contrast)",
+        "color-accent-contrast": "var(--color-dark-contrast)"
+    },
+    "output": "assets/react-toolbox"
   }
 }

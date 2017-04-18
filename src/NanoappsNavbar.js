@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import $ from "jquery";
-import logo from './logo.svg';
 import './App.css';
 import { Grid, Row, Col} from 'react-flexbox-grid';
 import Dropzone from 'react-dropzone';

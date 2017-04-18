@@ -1,12 +1,28 @@
 import React, { Component } from 'react';
 import $ from "jquery";
-import logo from './logo.svg';
 import './App.css';
-import { Grid, Row, Col} from 'react-flexbox-grid';
 import Dropzone from 'react-dropzone';
-import { Form, FormGroup, Button, Panel, ProgressBar} from 'react-bootstrap';
 import * as configs from "./config"
-import NanoappsNavbar from "./NanoappsNavbar"
+import ReactDOM from 'react-dom';
+import Button from 'react-toolbox/lib/button/Button'
+import AppBar from 'react-toolbox/lib/app_bar/AppBar'
+import Checkbox from 'react-toolbox/lib/checkbox/Checkbox'
+import IconButton from 'react-toolbox/lib/button/IconButton'
+import Layout from 'react-toolbox/lib/layout/Layout'
+import NavDrawer from 'react-toolbox/lib/layout/NavDrawer'
+import Panel from 'react-toolbox/lib/layout/Panel'
+import Sidebar from 'react-toolbox/lib/layout/Sidebar'
+import Tabs from 'react-toolbox/lib/tabs/Tabs'
+import Tab from 'react-toolbox/lib/tabs/Tab'
+import ProgressBar from 'react-toolbox/lib/progress_bar/ProgressBar'
+import Input from 'react-toolbox/lib/input/Input'
+import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
+import Card from 'react-toolbox/lib/card/Card'
+import CardMedia from 'react-toolbox/lib/card/CardMedia'
+import CardTitle from 'react-toolbox/lib/card/CardTitle'
+import List from 'react-toolbox/lib/list/List'
+import ListItem from 'react-toolbox/lib/list/ListItem'
+import ListDivider from 'react-toolbox/lib/list/ListDivider'
 
 class App extends Component {
 
@@ -19,25 +35,33 @@ class App extends Component {
       app_file: [],
       app_name: "",
       app_description: "",
+      app_icon_url: "",
       main_component_name: "",
       app_file_location: "",
       showModal: false,
       xhr_request_progress: 0,
       text: "",
-      text_index: 0
+      text_index: 0,
+      fixedIndex: 0,
+      show_snackbar: false,
+      disable_publish_tab: true
 		};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onDrop = this.onDrop.bind(this);
 	}
-
   resetValues() {
     var states = {}
     states["app_name"] = "";
     states["app_description"] = "";
     states["main_component_name"] = "";
+    states["app_icon_url"] = "";
     this.setState(states);
   }
+
+  handleFixedTabChange = (index) => {
+   this.setState({fixedIndex: index});
+  };
 
   onDrop(acceptedFiles, rejectedFiles) {
     console.log("On dropped");
@@ -55,13 +79,18 @@ class App extends Component {
         this.resetValues();
       }.bind(this),
       success: function(data) {
-        this.setState({ type: 'info', message: 'Successfully uploaded the app' })
-        console.log(data.file_path);
-        this.setState({app_file_location: data.file_path})
+        this.setState({
+                        show_snackbar: true,
+                        message: 'Successfully uploaded the app',
+                        disable_publish_tab: false,
+                        app_file_location: data.file_path,
+                        fixedIndex: 1,
+                      })
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
-        this.setState({ type: 'danger', message: xhr.response.status});
+        this.setState({ type: 'danger',
+                        message: xhr.response.status});
       }.bind(this),
       xhr: function () {
         var xhr = new window.XMLHttpRequest();
@@ -70,6 +99,7 @@ class App extends Component {
                 var percentComplete = evt.loaded / evt.total;
                 percentComplete = parseInt(percentComplete * 100, 10);
                 this.setState({xhr_request_progress: percentComplete})
+
             }
         }.bind(this), false);
         return xhr;
@@ -81,19 +111,19 @@ class App extends Component {
       this.dropzone.open();
   }
 
-  handleChange(event) {
-    var states = {}
-    states[event.target.id] = event.target.value;
-    this.setState(states);
+  handleChange = (name, value) => {
+    //Ask sattu about this
+    this.setState({...this.state, [name]: value});
   }
 
   handleSubmit(event) {
+    console.log("Handling submission");
     var data = {
       app_file_location: this.state.app_file_location,
       app_name: this.state.app_name,
       app_description: this.state.app_description,
       main_component_name: this.state.main_component_name,
-      thumbnail_location: '/images/default.jpg'
+      thumbnail_location: this.state.app_icon_url
     }
     $.ajax({
       url: configs.API_URL+"/nanoapps/add_app_details",
@@ -105,7 +135,7 @@ class App extends Component {
         this.resetValues();
       }.bind(this),
       success: function(data) {
-        this.setState({ type: 'success', message: 'Successfully published the app' })
+        this.setState({ show_snackbar: true, message: 'Successfully published the app' })
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -126,6 +156,15 @@ class App extends Component {
 		event.preventDefault();
   }
 
+  handleSnackbarClick = (event, instance) => {
+     this.setState({ show_snackbar: false });
+   };
+
+   handleSnackbarTimeout = (event, instance) => {
+     this.setState({ show_snackbar: false });
+   };
+
+
   render() {
     if (this.state.type && this.state.message) {
       var classString = 'alert alert-' + this.state.type;
@@ -133,81 +172,80 @@ class App extends Component {
                 {this.state.message}
              </div>;
     }
-    var progressbar = "";
+    var progressbar_style = "hide";
     if (this.state.xhr_request_progress != 0) {
-	    if (this.state.xhr_request_progress<100) {
-	      progressbar = <ProgressBar striped bsStyle="success" active now={this.state.xhr_request_progress} label={`${this.state.xhr_request_progress}%`} />
-	    } else if (this.state.xhr_request_progress==100) {
-	      progressbar = status;
-	    }
-   }
+      if (this.state.xhr_request_progress<100) {
+        progressbar_style = "show";
+      } else if (this.state.xhr_request_progress==100) {
+        progressbar_style = "hide";
+      }
+    }
     return (
-      <div className="App">
-        <div className="App-header">
-          <NanoappsNavbar />
-        </div>
-        <p className="App-intro">
-          <Grid fluid>
-            <Row>
-              <Col xs={10} md={10}  className="progressbar">
-                {progressbar}
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={8} md={4} className="col-md-offset-1">
-                <Panel bsStyle="info" header="Drag and drop the file">
-                  <div className="split-box">
-                      <Dropzone ref={(node) => { this.dropzone = node; }}  onDrop={this.onDrop}>
-                        <p>(or) </p>
-                          <button type="button" onClick={this.onOpenClick}>
-                            Open file
-                        </button>
-                      </Dropzone>
+        <Layout>
+            <NavDrawer active={this.state.drawerActive}
+                pinned permanentAt='xxxl'>
+                <section>
+                  <div className="logo">
+                  </div>
+                </section>
+                <section>
+                  <div className="below_logo">
+                  </div>
+                </section>
+                <section>
+                  <List selectable ripple>
+                    <ListItem caption='Create nanoapp'  selectable/>
+                    <ListDivider />
+                    <ListItem caption='Documentation' />
+                    <ListDivider />
+                    <ListItem caption='Installs and Analytics' />
+                    <ListDivider />
+                    <ListItem caption='Android and iOS SDK' />
+                  </List>
+                </section>
+            </NavDrawer>
+            <Panel>
+              <div className="below_logo">
+              </div>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '1.8rem' }}>
+                    <h3>Create and publish the nanoapp</h3>
+                      <div>
+                        <ProgressBar mode='determinate' className={progressbar_style} value={this.state.xhr_request_progress}/>
+                      </div>
+                      <Tabs index={this.state.fixedIndex} onChange={this.handleFixedTabChange} fixed>
+                        <Tab label='Upload'>
+                          <div className="split-box">
+                              <Dropzone ref={(node) => { this.dropzone = node; }}  onDrop={this.onDrop}>
+                                  <h4> Drag and drop the file </h4>
+                              </Dropzone>
+                          </div>
+                        </Tab>
+                        <Tab label='Publish' disabled={this.state.disable_publish_tab}>
+                          <section>
+                            <form>
+                            <Input type="text" required value={this.state.app_name} label="App name" name="app_name" onChange={this.handleChange.bind(this, 'app_name')} maxLength={30} />
+                            <Input type="text" required value={this.state.app_description} label="Description" name="app_description" onChange={this.handleChange.bind(this, 'app_description')} />
+                            <Input type="text" required value={this.state.main_component_name} label="Index component" name="main_component_name"  onChange={this.handleChange.bind(this, 'main_component_name')} />
+                            <Input type="text" required value={this.state.app_icon_url} label="App icon url" name="app_icon_url" onChange={this.handleChange.bind(this, 'app_icon_url')}/>
+                            <Button raised primary type="submit" onClick={this.handleSubmit}>Publish</Button>
+                            </form>
+                          </section>
+                        </Tab>
+                      </Tabs>
+                      <section>
+                        <Snackbar
+                          action='Dismiss'
+                          active={this.state.show_snackbar}
+                          label={this.state.message}
+                          timeout={2000}
+                          onClick={this.handleSnackbarClick}
+                          onTimeout={this.handleSnackbarTimeout}
+                          type='cancel'
+                        />
+                    </section>
                 </div>
-                </Panel>
-              </Col>
-
-              <Col xs={8} md={4} className="col-sm-offset-1 col-xs-8 col-md-6">
-                <div className="overlay">
-                </div>
-                <Panel header="Fill in app details"  bsStyle="info">
-                  <Form horizontal onSubmit={this.handleSubmit} className="split-box" className="app-details-form">
-                    <FormGroup>
-                      <label for="app_name" className="col-sm-2 control-label">Name</label>
-                          <div className="col-sm-6 col-sm-offset-2 ">
-                            <input type="text" value={this.state.app_name} className="form-control" id="app_name" placeholder="App name" onChange={this.handleChange} />
-                          </div>
-                    </FormGroup>
-
-                    <FormGroup>
-                      <label for="app_description" className="control-label col-sm-2">Description</label>
-                          <div className="col-sm-6 col-sm-offset-2 ">
-                            <textarea type="text" value={this.state.app_description} className="form-control" id="app_description" placeholder="App Description" onChange={this.handleChange} >
-                            </textarea>
-                          </div>
-                    </FormGroup>
-
-                    <FormGroup>
-                      <label for="main_component_name" className="col-sm-2 control-label">Index component</label>
-                          <div className="col-sm-6 col-sm-offset-2 ">
-                            <input type="text" value={this.state.main_component_name} className="form-control" id="main_component_name" placeholder="Main component name" onChange={this.handleChange}  />
-                          </div>
-                    </FormGroup>
-
-                    <FormGroup>
-                        <label for="submit btn" className="col-sm-2  control-label"></label>
-                          <div className="col-sm-6 col-sm-offset-2 ">
-                            <Button className="btn btn-default btn-lg btn-block" type="submit">Publish</Button>
-                          </div>
-                    </FormGroup>
-
-                  </Form>
-                </Panel>
-              </Col>
-            </Row>
-          </Grid>
-        </p>
-      </div>
+            </Panel>
+        </Layout>
     );
   }
 }
