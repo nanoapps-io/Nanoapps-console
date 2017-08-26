@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import '../assets/react-toolbox/theme.css';
-import theme from '../assets/react-toolbox/theme.js';
-import ThemeProvider from 'react-toolbox/lib/ThemeProvider';
-import './index.css';
+import {BrowserRouter} from 'react-router-dom'
+import App from './components/App';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import UserState from './store.js'
+
+const userState = new UserState();
+
+window.userState = userState
 
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-  <App /></ThemeProvider>,
-  document.getElementById('root')
-);
+    <BrowserRouter>
+    <MuiThemeProvider>
+        <App userState={userState}/>
+    </MuiThemeProvider>
+</BrowserRouter>, document.getElementById('root'));
